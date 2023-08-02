@@ -158,12 +158,12 @@ function install_lua {
 		echo -e "${RV} Installing Lua ${RC}"
 		mkdir -p "$SRC_LUA_DIR"
 		cd "$SRC_DIR" || return
-		curl -R -O http://www.lua.org/ftp/lua-"{$lua_version}".tar.gz
-		tar -zxf lua-"{$lua_version}".tar.gz
-		cd lua-"{$lua_version}" || return
+		curl -R -O http://www.lua.org/ftp/lua-"$lua_version".tar.gz
+		tar -zxf lua-"$lua_version".tar.gz
+		cd lua-"$lua_version" || return
 		make linux test
 		sudo make install
-		rm -rf lua-"{$lua_version}".tar.gz
+		rm -rf lua-"$lua_version".tar.gz
 	else
 		echo -e "${RV} Lua is installed ${RC}"
 	fi
@@ -176,10 +176,10 @@ function install_luarocks {
 			echo -e "${RV} Installing Luarocks... ${RC}"
 			mkdir -p "$SRC_LUAROCKS_DIR"
 			cd "$SRC_LUAROCKS_DIR" || return
-			wget https://luarocks.org/releases/luarocks-"{$luarocks_version}".tar.gz
-			tar -zxpf luarocks-"{$luarocks_version}".tar.gz
-			rm -rf luarocks-"{$luarocks_version}".tar.gz
-			cd luarocks-"{$luarocks_version}" || return
+			wget https://luarocks.org/releases/luarocks-"$luarocks_version".tar.gz
+			tar -zxpf luarocks-"$luarocks_version".tar.gz
+			rm -rf luarocks-"$luarocks_version".tar.gz
+			cd luarocks-"$luarocks_version" || return
 			./configure --with-lua-include=/usr/local/include
 			make
 			sudo make install
