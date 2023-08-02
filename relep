@@ -23,14 +23,14 @@ THIS_REPO_PATH="$(dirname "$(realpath "$0")")"
 # DOT_CFG_PATH=$THIS_REPO_PATH/config
 # DOT_HOME_PATH=$THIS_REPO_PATH/home
 USR_CFG_PATH=$HOME/.config
-SRC_DIR=$HOME/src/lua
+SRC_DIR=$HOME/src
 # FONT_DIR=$HOME/.local/share/fonts
 # USR_CFG_PATH=$THIS_REPO_PATH/test
 
 BREW_EXE="brew"
 HOMEBREW_HOME=
 # PYTHON=
-export PATH=${HOME}/.local/bin:${PATH}
+# export PATH=${HOME}/.local/bin:${PATH}
 
 configExists() {
 	[[ -e "$1" ]] && [[ ! -L "$1" ]]
@@ -146,18 +146,24 @@ function install_packages {
 
 # }
 
+SRC_LUA_DIR="${SRC_DIR}/lua"
+SRC_LUAROCKS_DIR="${SRC_DIR}/luarocks"
+
+lua_version="5.4.6"
+luarocks_version="3.9.2"
+
 # Lua
 function install_lua {
 	if ! command_exists lua; then
 		echo -e "${RV} Installing Lua ${RC}"
-		mkdir -p "$SRC_DIR"
+		mkdir -p "$SRC_LUA_DIR"
 		cd "$SRC_DIR" || return
-		curl -R -O http://www.lua.org/ftp/lua-5.3.5.tar.gz
-		tar -zxf lua-5.3.5.tar.gz
-		rm -rf lua-5.3.5.tar.gz
-		cd lua-5.3.5 || return
+		curl -R -O http://www.lua.org/ftp/lua-"{$lua_version}".tar.gz
+		tar -zxf lua-"{$lua_version}".tar.gz
+		cd lua-"{$lua_version}" || return
 		make linux test
 		sudo make install
+		rm -rf lua-"{$lua_version}".tar.gz
 	else
 		echo -e "${RV} Lua is installed ${RC}"
 	fi
@@ -168,12 +174,12 @@ function install_luarocks {
 	if command_exists lua; then
 		if ! command_exists luarocks; then
 			echo -e "${RV} Installing Luarocks... ${RC}"
-			mkdir -p "$SRC_DIR"
-			cd "$SRC_DIR" || return
-			wget https://luarocks.org/releases/luarocks-3.8.0.tar.gz
-			tar -zxpf luarocks-3.8.0.tar.gz
-			rm -rf luarocks-3.8.0.tar.gz
-			cd luarocks-3.8.0 || return
+			mkdir -p "$SRC_LUAROCKS_DIR"
+			cd "$SRC_LUAROCKS_DIR" || return
+			wget https://luarocks.org/releases/luarocks-"{$luarocks_version}".tar.gz
+			tar -zxpf luarocks-"{$luarocks_version}".tar.gz
+			rm -rf luarocks-"{$luarocks_version}".tar.gz
+			cd luarocks-"{$luarocks_version}" || return
 			./configure --with-lua-include=/usr/local/include
 			make
 			sudo make install
