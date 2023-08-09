@@ -98,7 +98,6 @@ checkEnv() {
 		fi
 	done
 }
-
 checkEnv
 
 function install_packages {
@@ -107,44 +106,44 @@ function install_packages {
 	sudo ${PACKAGER} install -yq ${DEPENDENCIES}
 }
 
-# function back_sym {
-# 	# перед создание линков делает бекапы только тех пользовательских конфикураций,
-# 	# файлы которых есть в ./config ./home
-# 	mkdir -p "$USR_CFG_PATH"
-# 	echo -e "${RV}${YELLOW} Backing up existing files... ${RC}"
-# 	for config in "$(ls ${DOT_CFG_PATH})"; do
-# 		if configExists "${USR_CFG_PATH}/${config}"; then
-# 			echo -e "${YELLOW}Moving old config ${USR_CFG_PATH}/${config} to ${USR_CFG_PATH}/${config}.old${RC}"
-# 			if ! mv "${USR_CFG_PATH}/${config}" "${USR_CFG_PATH}/${config}.old"; then
-# 				echo -e "${RED}Can't move the old config!${RC}"
-# 				exit 1
-# 			fi
-# 			echo -e "${WHITE} Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old' ${RC}"
-# 		fi
-# 		echo -e "${GREEN}Linking ${DOT_CFG_PATH}/${config} to ${USR_CFG_PATH}/${config}${RC}"
-# 		if ! ln -snf "${DOT_CFG_PATH}/${config}" "${USR_CFG_PATH}/${config}"; then
-# 			echo echo -e "${RED}Can't link the config!${RC}"
-# 			exit 1
-# 		fi
-# 	done
+function back_sym {
+	# перед создание линков делает бекапы только тех пользовательских конфикураций,
+	# файлы которых есть в ./config ./home
+	mkdir -p "$USR_CFG_PATH"
+	echo -e "${RV}${YELLOW} Backing up existing files... ${RC}"
+	for config in $(command ls ${DOT_CFG_PATH}); do
+		if configExists "${USR_CFG_PATH}/${config}"; then
+			echo -e "${YELLOW}Moving old config ${USR_CFG_PATH}/${config} to ${USR_CFG_PATH}/${config}.old${RC}"
+			if ! mv "${USR_CFG_PATH}/${config}" "${USR_CFG_PATH}/${config}.old"; then
+				echo -e "${RED}Can't move the old config!${RC}"
+				exit 1
+			fi
+			echo -e "${WHITE} Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old' ${RC}"
+		fi
+		echo -e "${GREEN}Linking ${DOT_CFG_PATH}/${config} to ${USR_CFG_PATH}/${config}${RC}"
+		if ! ln -snf "${DOT_CFG_PATH}/${config}" "${USR_CFG_PATH}/${config}"; then
+			echo echo -e "${RED}Can't link the config!${RC}"
+			exit 1
+		fi
+	done
 
-# for config in $(ls ${DOT_HOME_PATH}); do
-# 	if configExists "$HOME/.${config}"; then
-# 		echo -e "${YELLOW}Moving old config ${HOME}/.${config} to ${HOME}/.${config}.old${RC}"
-# 		if ! mv "${HOME}/.${config}" "${HOME}/.${config}.old"; then
-# 			echo -e "${RED}Can't move the old config!${RC}"
-# 			exit 1
-# 		fi
-#		  echo -e "${WHITE} Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old' ${RC}"
-# 	fi
-# 	echo -e "${GREEN}Linking ${DOT_HOME_PATH}/${config} to ${HOME}/.${config}${RC}"
-# 	if ! ln -snf "${DOT_HOME_PATH}/${config}" "${HOME}/.${config}"; then
-# 		echo echo -e "${RED}Can't link the config!${RC}"
-# 		exit 1
-# 	fi
-# done
+	# for config in $(ls ${DOT_HOME_PATH}); do
+	# 	if configExists "$HOME/.${config}"; then
+	# 		echo -e "${YELLOW}Moving old config ${HOME}/.${config} to ${HOME}/.${config}.old${RC}"
+	# 		if ! mv "${HOME}/.${config}" "${HOME}/.${config}.old"; then
+	# 			echo -e "${RED}Can't move the old config!${RC}"
+	# 			exit 1
+	# 		fi
+	#		  echo -e "${WHITE} Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old' ${RC}"
+	# 	fi
+	# 	echo -e "${GREEN}Linking ${DOT_HOME_PATH}/${config} to ${HOME}/.${config}${RC}"
+	# 	if ! ln -snf "${DOT_HOME_PATH}/${config}" "${HOME}/.${config}"; then
+	# 		echo echo -e "${RED}Can't link the config!${RC}"
+	# 		exit 1
+	# 	fi
+	# done
 
-# }
+}
 
 SRC_LUA_DIR="${SRC_DIR}/lua"
 SRC_LUAROCKS_DIR="${SRC_DIR}/luarocks"
@@ -205,6 +204,17 @@ function install_r {
 	# sudo apt install --no-install-recommends r-cran-tidyverse
 	# deb https://<my.favorite.ubuntu.mirror>/ focal-backports main restricted universe
 	R --version
+}
+
+function install_nodejs {
+	echo -e "\u001b[7m Installing NodeJS... \u001b[0m"
+	# nodejs
+	sudo apt remove nodejs
+	sudo apt autoremove
+	curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+	sudo apt install -y nodejs
+	node -v
+	npm -v
 }
 
 function install_debget {
@@ -276,10 +286,16 @@ function all {
 	install_lua
 	install_luarocks
 	install_r
+	install_nodejs
 	install_homebrew
 	install_debget
 	echo -e "\u001b[7m Done! \u001b[0m"
 }
+
+if [ "$1" = "--backsym" ] || [ "$1" = "-b" ]; then
+	back_sym
+	exit 0
+fi
 
 if [ "$1" = "--all" -o "$1" = "-a" ]; then
 	all
@@ -296,6 +312,7 @@ echo -e "  \u001b[34;1m (s) backup and symlink \u001b[0m"
 echo -e "  \u001b[34;1m (l) install lua \u001b[0m"
 echo -e "  \u001b[34;1m (r) install luarocks (5,6,13) \u001b[0m"
 echo -e "  \u001b[34;1m (R) install R \u001b[0m"
+echo -e "  \u001b[34;1m (R) install NodeJS \u001b[0m"
 echo -e "  \u001b[34;1m (b) install brew \u001b[0m"
 echo -e "  \u001b[34;1m (d) install deb-get \u001b[0m"
 
@@ -329,6 +346,10 @@ case $option in
 
 "R")
 	install_r
+	;;
+
+"n")
+	install_nodejs
 	;;
 
 "b")
