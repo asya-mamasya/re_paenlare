@@ -1,5 +1,6 @@
 # опция для всех процессов сессии, как интерактивных, так и неинтерактивных
 # options(repos = c(CRAN = "https://cran.rstudio.org"))
+options(repos = c(CRAN='https://mirror.truenetwork.ru/CRAN/'))
 
 # только если работа идёт в интерактивном режиме
 # меняем scientific-формат на обычный разрядный
