@@ -1,1 +1,4 @@
 home/jupyter/migrated
+platform_install.sh
+config/jupyter/migrated
+config/jupyter/serverconfig/jupyterlabapputilsextensionannouncements.json
