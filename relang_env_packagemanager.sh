@@ -101,7 +101,7 @@ checkEnv() {
 checkEnv
 
 function install_packages {
-	DEPENDENCIES='curl wget python3 pipx aptitude nala libxml2-dev'
+	DEPENDENCIES='curl wget python3 pipx aptitude nala libxml2-dev luakit'
 
 	sudo ${PACKAGER} install -yq ${DEPENDENCIES}
 }
@@ -206,6 +206,27 @@ function install_r {
 	R --version
 }
 
+function install_conda {
+	echo -e "${RV} Installing R... ${RC}"
+
+	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P $SRC_DIR
+	bash $SRC_DIR/Miniconda3-latest-Linux-x86_64.sh
+}
+
+function install_cargo {
+	## Check for dependencies.
+	# DEPEND='libfontconfig1-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev'
+	# echo -e "${RV}${YELLOW} Installing dependencies${RC}"
+	# sudo "${PACKAGER}" install -yq "${DEPEND}"
+	# Rust,Cargo
+	if ! command_exists cargo; then
+		echo -e "${RV} Installing Cargo ${RC}"
+		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	else
+		echo -e "${RV} Rust is installed${RC}"
+	fi
+}
+
 function install_nodejs {
 	echo -e "\u001b[7m Installing NodeJS... \u001b[0m"
 	# nodejs
@@ -286,6 +307,8 @@ function all {
 	install_lua
 	install_luarocks
 	install_r
+	install_conda
+	install_cargo
 	install_nodejs
 	install_homebrew
 	install_debget
@@ -312,7 +335,9 @@ echo -e "  \u001b[34;1m (s) backup and symlink \u001b[0m"
 echo -e "  \u001b[34;1m (l) install lua \u001b[0m"
 echo -e "  \u001b[34;1m (r) install luarocks (5,6,13) \u001b[0m"
 echo -e "  \u001b[34;1m (R) install R \u001b[0m"
-echo -e "  \u001b[34;1m (R) install NodeJS \u001b[0m"
+echo -e "  \u001b[34;1m (c) install conda \u001b[0m"
+echo -e "  \u001b[34;1m (C) install cargo \u001b[0m"
+echo -e "  \u001b[34;1m (n) install NodeJS \u001b[0m"
 echo -e "  \u001b[34;1m (b) install brew \u001b[0m"
 echo -e "  \u001b[34;1m (d) install deb-get \u001b[0m"
 
@@ -346,6 +371,14 @@ case $option in
 
 "R")
 	install_r
+	;;
+
+"c")
+	install_conda
+	;;
+
+"C")
+	install_cargo
 	;;
 
 "n")
