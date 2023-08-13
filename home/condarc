@@ -1,1 +1,7 @@
-auto_activate_base: false
+auto_activate_base: true
+
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+channel_priority: strict
