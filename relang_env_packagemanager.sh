@@ -230,12 +230,19 @@ function install_cargo {
 function install_nodejs {
 	echo -e "\u001b[7m Installing NodeJS... \u001b[0m"
 	# nodejs
-	sudo apt remove nodejs
-	sudo apt autoremove
-	curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-	sudo apt install -y nodejs
-	node -v
-	npm -v
+	NVM_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/nvm"
+	mkdir -p $NVM_DIR
+	# wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+	PROFILE=/dev/null bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash'
+
+	cargo install fnm
+
+	# sudo apt remove nodejs
+	# sudo apt autoremove
+	# curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+	# sudo apt install -y nodejs
+	# node -v
+	# npm -v
 }
 
 function install_debget {
