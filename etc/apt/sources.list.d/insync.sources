@@ -1,0 +1,7 @@
+Types: deb
+URIs: http://apt.insync.io/ubuntu
+Suites: jammy
+Components: non-free contrib
+Signed-By: /etc/apt/keyrings/insync.gpg
+
+# deb http://apt.insync.io/ubuntu jammy non-free contrib

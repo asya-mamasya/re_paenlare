@@ -1,0 +1,8 @@
+# X-Repolib-Name: Google Chrome
+Enabled: yes
+Types: deb
+URIs: https://dl.google.com/linux/chrome/deb/
+Suites: stable
+Components: main
+Signed-By: /etc/apt/keyrings/google-chrome.gpg
+Architectures: amd64

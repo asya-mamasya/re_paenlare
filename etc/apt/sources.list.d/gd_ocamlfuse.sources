@@ -1,0 +1,5 @@
+Types: deb deb-src
+URIs: https://ppa.launchpadcontent.net/alessandro-strada/ppa/ubuntu/ 
+Suites: jammy
+Components: main
+Signed-By: /etc/apt/keyrings/gdrive_ocamlfuse.gpg

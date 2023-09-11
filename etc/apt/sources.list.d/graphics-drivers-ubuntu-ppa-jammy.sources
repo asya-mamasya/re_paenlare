@@ -1,0 +1,5 @@
+Types: deb deb-src
+URIs: https://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu/
+Suites: jammy
+Components: main
+Signed-By: /etc/apt/keyrings/graphics-drivers-ubuntu-ppa.gpg
