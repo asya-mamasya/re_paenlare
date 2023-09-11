@@ -14,4 +14,4 @@ done
 for k in $(command ls "$this_dir_path$keyrings_dirs"); do
 	sudo cp "$this_dir_path$keyrings_dirs/$k" "$keyrings_dirs/$k"
 done
-# sudo chown root:root -R $keyrings_dirs $source_lists_dir
+sudo chown ru:ru -R $keyrings_dirs $source_lists_dir
