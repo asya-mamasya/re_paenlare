@@ -93,7 +93,11 @@ checkEnv() {
 checkEnv
 
 function install_packages {
-	DEPENDENCIES='curl wget python3 pipx aptitude nala libxml2-dev luakit'
+	DEPENDENCIES='curl wget python3 pipx aptitude nala libxml2-dev luakit \
+    apt-transport-https'
+
+	sudo apt install --upgrade ca-certificates
+	sudo apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
 
 	sudo "${PACKAGER}" install -yq "${DEPENDENCIES}"
 }
@@ -135,6 +139,20 @@ function back_sym {
 		fi
 	done
 
+}
+
+function apt_key() {
+	this_dir_path="$(dirname "$(realpath "$0")")"
+	confif_dirs=etc/apt
+	source_lists_dirs="$confif_dirs"/sources.list.d
+	keyrings_dirs="$confif_dirs"/keyrings
+
+	# sudo mkdir -p $source_lists_dirs $keyrings_dirs
+
+	sudo ln -svnf "$this_dir_path/$source_lists_dirs" "/$source_lists_dirs"
+	sudo cp -r "$this_dir_path/$keyrings_dirs" "/$keyrings_dirs"
+
+	# sudo chown root:root -R $keyrings_dirs $source_lists_dir
 }
 
 SRC_LUA_DIR="${SRC_DIR}/lua"
@@ -327,6 +345,7 @@ function all {
 	echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
 	install_packages
 	back_sym
+	apt-key
 	install_lua
 	install_luarocks
 	install_r
@@ -353,6 +372,7 @@ echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
 
 echo -e " \u001b[37;1m\u001b[4mSelect an option:\u001b[0m"
 echo -e "  \u001b[34;1m (a) ALL \u001b[0m"
+echo -e "  \u001b[34;1m (k) apt key \u001b[0m"
 echo -e "  \u001b[34;1m (p) install packages \u001b[0m"
 echo -e "  \u001b[34;1m (s) backup and symlink \u001b[0m"
 echo -e "  \u001b[34;1m (l) install lua \u001b[0m"
@@ -374,6 +394,10 @@ case $option in
 
 "a")
 	all
+	;;
+
+"k")
+	apt_key
 	;;
 
 "p")
