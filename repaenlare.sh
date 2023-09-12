@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-#
-# Copyright (C) 2023 Ronald Record <ronaldrecord@gmail.com>
-# Copyright (C) 2022 Michael Peter <michaeljohannpeter@gmail.com>
-#
-# Install Neovim and all dependencies for the Neovim config at:
-#     https://github.com/doctorfree/nvim-lazyman
-#
-# shellcheck disable=SC2001,SC2016,SC2006,SC2086,SC2181,SC2129,SC2059,SC2164
 
 RC='\e[0m'
 RED='\e[31m'
@@ -37,7 +29,7 @@ configExists() {
 }
 
 command_exists() {
-	command -v $1 >/dev/null 2>&1
+	command -v "$1" >/dev/null 2>&1
 }
 
 abort() {
@@ -78,9 +70,9 @@ checkEnv() {
 	## Check Package Handeler
 	PACKAGEMANAGER='apt dnf'
 	for pgm in ${PACKAGEMANAGER}; do
-		if command_exists ${pgm}; then
+		if command_exists "${pgm}"; then
 			PACKAGER=${pgm}
-			echo -e ${RV}"Using ${pgm}"
+			echo -e "${RV}Using ${pgm}"
 		fi
 	done
 
@@ -103,7 +95,7 @@ checkEnv
 function install_packages {
 	DEPENDENCIES='curl wget python3 pipx aptitude nala libxml2-dev luakit'
 
-	sudo ${PACKAGER} install -yq ${DEPENDENCIES}
+	sudo "${PACKAGER}" install -yq "${DEPENDENCIES}"
 }
 
 # перед создание линков делает бекапы только тех пользовательских конфикураций,
@@ -111,7 +103,7 @@ function install_packages {
 function back_sym {
 	mkdir -p "$USR_CFG_PATH"
 	echo -e "${RV}${YELLOW} Backing up existing files... ${RC}"
-	for config in $(command ls ${DOT_CFG_PATH}); do
+	for config in $(command ls "${DOT_CFG_PATH}"); do
 		if configExists "${USR_CFG_PATH}/${config}"; then
 			echo -e "${YELLOW}Moving old config ${USR_CFG_PATH}/${config} to ${USR_CFG_PATH}/${config}.old${RC}"
 			if ! mv "${USR_CFG_PATH}/${config}" "${USR_CFG_PATH}/${config}.old"; then
@@ -127,7 +119,7 @@ function back_sym {
 		fi
 	done
 
-	for config in $(command ls ${DOT_HOME_PATH}); do
+	for config in $(command ls "${DOT_HOME_PATH}"); do
 		if configExists "$HOME/.${config}"; then
 			echo -e "${YELLOW}Moving old config ${HOME}/.${config} to ${HOME}/.${config}.old${RC}"
 			if ! mv "${HOME}/.${config}" "${HOME}/.${config}.old"; then
@@ -191,16 +183,17 @@ function install_luarocks {
 		install_luarocks
 	fi
 }
+
 function install_r {
 	echo -e "${RV} Installing R... ${RC}"
 	#R
-	wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+	# wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 	# gpg --show-keys /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-	sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/"
+	# sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/"
 	sudo apt-get update
 	sudo apt-get install r-base
 	sudo apt-get install r-base-dev libxml2-dev
-	sudo add-apt-repository ppa:c2d4u.team/c2d4u4.0+
+	# sudo add-apt-repository ppa:c2d4u.team/c2d4u4.0+
 	# sudo apt install --no-install-recommends r-cran-tidyverse
 	# deb https://<my.favorite.ubuntu.mirror>/ focal-backports main restricted universe
 	R --version
@@ -209,8 +202,8 @@ function install_r {
 function install_conda {
 	echo -e "${RV} Installing R... ${RC}"
 
-	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P $SRC_DIR
-	bash $SRC_DIR/Miniconda3-latest-Linux-x86_64.sh
+	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$SRC_DIR"
+	bash "$SRC_DIR"/Miniconda3-latest-Linux-x86_64.sh
 }
 
 function install_cargo {
@@ -221,6 +214,9 @@ function install_cargo {
 	# Rust,Cargo
 	if ! command_exists cargo; then
 		echo -e "${RV} Installing Cargo ${RC}"
+		CARGO_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/cargo"
+		RUSTUP_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rustup"
+		mkdir -p "$CARGO_HOME" "$RUSTUP_HOME"
 		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	else
 		echo -e "${RV} Rust is installed${RC}"
@@ -228,14 +224,34 @@ function install_cargo {
 }
 
 function install_nodejs {
+
 	echo -e "\u001b[7m Installing NodeJS... \u001b[0m"
 	# nodejs
+	# node version manager
 	NVM_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/nvm"
-	mkdir -p $NVM_DIR
-	# wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
-	PROFILE=/dev/null bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash'
+	mkdir -p "$NVM_DIR"
+	if ! command_exists nvm; then
+		git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+		cd "$NVM_DIR" || exit
+		git checkout "$(git rev-list --tags --max-count=1)"
+		# git checkout "$(git describe --abbrev=0 --tags --match "v[0-9]*" "$(git rev-list --tags --max-count=1)")"
+	else
+		cd "$NVM_DIR" || exit
+		git fetch --tags origin
+		git checkout "$(git rev-list --tags --max-count=1)"
+		# git checkout "$(git describe --abbrev=0 --tags --match "v[0-9]*" "$(git rev-list --tags --max-count=1)")"
+	fi
 
-	cargo install fnm
+	# PROFILE=/dev/null bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash'
+
+	if command_exists cargo; then
+		if ! command_exists fnm; then
+			cargo install fnm
+		fi
+	else
+		install_cargo
+		cargo install fnm
+	fi
 
 	# sudo apt remove nodejs
 	# sudo apt autoremove
