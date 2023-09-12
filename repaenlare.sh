@@ -2,22 +2,14 @@
 
 RC='\e[0m'
 RED='\e[31m'
-# YELLOW='\e[33m'
-# GREEN='\e[32m'
-# GREEN2='[32;1m'
-# WHITE='[37;1m'
-# BLUE='[34;1m'
 
 RV='\u001b[7m'
 
-THIS_REPO_PATH="$(dirname "$(realpath "$0")")"
-# THIS_REPO_PATH=$HOME/REPOS/reinst
-DOT_CFG_PATH=$THIS_REPO_PATH/config
-DOT_HOME_PATH=$THIS_REPO_PATH/home
-USR_CFG_PATH=$HOME/.config
-SRC_DIR=$HOME/src
-# FONT_DIR=$HOME/.local/share/fonts
-# USR_CFG_PATH=$THIS_REPO_PATH/test
+this_dir="$(dirname "$(realpath "$0")")"
+dot_config=$this_dir/config
+dot_home=$this_dir/home
+config_dir=$HOME/.config
+src_dir=$HOME/src
 
 BREW_EXE="brew"
 HOMEBREW_HOME=
@@ -82,7 +74,7 @@ checkEnv() {
 	fi
 
 	## Check if the current directory is writable.
-	PATHs="$THIS_REPO_PATH $USR_CFG_PATH "
+	PATHs="$this_dir $config_dir "
 	for path in $PATHs; do
 		if [[ ! -w ${path} ]]; then
 			echo -e "${RED}Can't write to ${path}${RC}"
@@ -105,25 +97,25 @@ function install_packages {
 # перед создание линков делает бекапы только тех пользовательских конфикураций,
 # файлы которых есть в ./config ./home
 function back_sym {
-	mkdir -p "$USR_CFG_PATH"
+	mkdir -p "$config_dir"
 	echo -e "${RV}${YELLOW} Backing up existing files... ${RC}"
-	for config in $(command ls "${DOT_CFG_PATH}"); do
-		if configExists "${USR_CFG_PATH}/${config}"; then
-			echo -e "${YELLOW}Moving old config ${USR_CFG_PATH}/${config} to ${USR_CFG_PATH}/${config}.old${RC}"
-			if ! mv "${USR_CFG_PATH}/${config}" "${USR_CFG_PATH}/${config}.old"; then
+	for config in $(command ls "${dot_config}"); do
+		if configExists "${config_dir}/${config}"; then
+			echo -e "${YELLOW}Moving old config ${config_dir}/${config} to ${config_dir}/${config}.old${RC}"
+			if ! mv "${config_dir}/${config}" "${config_dir}/${config}.old"; then
 				echo -e "${RED}Can't move the old config!${RC}"
 				exit 1
 			fi
 			echo -e "${WHITE} Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old' ${RC}"
 		fi
-		echo -e "${GREEN}Linking ${DOT_CFG_PATH}/${config} to ${USR_CFG_PATH}/${config}${RC}"
-		if ! ln -snf "${DOT_CFG_PATH}/${config}" "${USR_CFG_PATH}/${config}"; then
+		echo -e "${GREEN}Linking ${dot_config}/${config} to ${config_dir}/${config}${RC}"
+		if ! ln -snf "${dot_config}/${config}" "${config_dir}/${config}"; then
 			echo echo -e "${RED}Can't link the config!${RC}"
 			exit 1
 		fi
 	done
 
-	for config in $(command ls "${DOT_HOME_PATH}"); do
+	for config in $(command ls "${dot_home}"); do
 		if configExists "$HOME/.${config}"; then
 			echo -e "${YELLOW}Moving old config ${HOME}/.${config} to ${HOME}/.${config}.old${RC}"
 			if ! mv "${HOME}/.${config}" "${HOME}/.${config}.old"; then
@@ -132,8 +124,8 @@ function back_sym {
 			fi
 			echo -e "${WHITE} Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old' ${RC}"
 		fi
-		echo -e "${GREEN}Linking ${DOT_HOME_PATH}/${config} to ${HOME}/.${config}${RC}"
-		if ! ln -snf "${DOT_HOME_PATH}/${config}" "${HOME}/.${config}"; then
+		echo -e "${GREEN}Linking ${dot_home}/${config} to ${HOME}/.${config}${RC}"
+		if ! ln -snf "${dot_home}/${config}" "${HOME}/.${config}"; then
 			echo echo -e "${RED}Can't link the config!${RC}"
 			exit 1
 		fi
@@ -155,8 +147,8 @@ function apt_key() {
 	# sudo chown root:root -R $keyrings_dirs $source_lists_dir
 }
 
-SRC_LUA_DIR="${SRC_DIR}/lua"
-SRC_LUAROCKS_DIR="${SRC_DIR}/luarocks"
+src_lua_dir="${src_dir}/lua"
+src_luarocks_dir="${src_dir}/luarocks"
 
 lua_version="5.4.6"
 luarocks_version="3.9.2"
@@ -165,8 +157,8 @@ luarocks_version="3.9.2"
 function install_lua {
 	if ! command_exists lua; then
 		echo -e "${RV} Installing Lua ${RC}"
-		mkdir -p "$SRC_LUA_DIR"
-		cd "$SRC_DIR" || return
+		mkdir -p "$src_lua_dir"
+		cd "$src_dir" || return
 		curl -R -O http://www.lua.org/ftp/lua-"$lua_version".tar.gz
 		tar -zxf lua-"$lua_version".tar.gz
 		cd lua-"$lua_version" || return
@@ -183,8 +175,8 @@ function install_luarocks {
 	if command_exists lua; then
 		if ! command_exists luarocks; then
 			echo -e "${RV} Installing Luarocks... ${RC}"
-			mkdir -p "$SRC_LUAROCKS_DIR"
-			cd "$SRC_LUAROCKS_DIR" || return
+			mkdir -p "$src_luarocks_dir"
+			cd "$src_luarocks_dir" || return
 			wget https://luarocks.org/releases/luarocks-"$luarocks_version".tar.gz
 			tar -zxpf luarocks-"$luarocks_version".tar.gz
 			rm -rf luarocks-"$luarocks_version".tar.gz
@@ -220,8 +212,8 @@ function install_r {
 function install_conda {
 	echo -e "${RV} Installing R... ${RC}"
 
-	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$SRC_DIR"
-	bash "$SRC_DIR"/Miniconda3-latest-Linux-x86_64.sh
+	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$src_dir"
+	bash "$src_dir"/Miniconda3-latest-Linux-x86_64.sh
 }
 
 function install_cargo {
