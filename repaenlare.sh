@@ -11,34 +11,12 @@ dot_home=$this_dir/home
 config_dir=$HOME/.config
 src_dir=$HOME/src
 
-BREW_EXE="brew"
-HOMEBREW_HOME=
-# PYTHON=
-# export PATH=${HOME}/.local/bin:${PATH}
-
 configExists() {
 	[[ -e "$1" ]] && [[ ! -L "$1" ]]
 }
 
 command_exists() {
 	command -v "$1" >/dev/null 2>&1
-}
-
-abort() {
-	printf "\nERROR: %s\n" "$@" >&2
-	exit 1
-}
-
-log() {
-	[ "$quiet" ] || {
-		printf "\n\t%s" "$@"
-	}
-}
-
-calc_elapsed() {
-	FINISH_SECONDS=$(date +%s)
-	ELAPSECS=$((FINISH_SECONDS - START_SECONDS))
-	ELAPSED=$(eval "echo $(date -ud "@$ELAPSECS" +'$((%s/3600/24)) days %H hr %M min %S sec')")
 }
 
 check_prerequisites() {
@@ -74,7 +52,7 @@ checkEnv() {
 	fi
 
 	## Check if the current directory is writable.
-	PATHs="$this_dir $config_dir "
+	PATHs="$this_dir $config_dir"
 	for path in $PATHs; do
 		if [[ ! -w ${path} ]]; then
 			echo -e "${RED}Can't write to ${path}${RC}"
@@ -134,18 +112,28 @@ function back_sym {
 }
 
 function apt_key() {
-	this_dir_path="$(dirname "$(realpath "$0")")"
-	confif_dirs=etc/apt
-	source_lists_dirs="$confif_dirs"/sources.list.d
-	keyrings_dirs="$confif_dirs"/keyrings
-
+	apt_confif_dirs=etc/apt
+	source_lists_dirs="$apt_confif_dirs"/sources.list.d
+	keyrings_dirs="$apt_confif_dirs"/keyrings
 	# sudo mkdir -p $source_lists_dirs $keyrings_dirs
+  sudo ln -svnf "$this_dir/$source_lists_dirs" "/$source_lists_dirs"
+	sudo cp -r "$this_dir/$keyrings_dirs" "/$keyrings_dirs"
 
-	sudo ln -svnf "$this_dir_path/$source_lists_dirs" "/$source_lists_dirs"
-	sudo cp -r "$this_dir_path/$keyrings_dirs" "/$keyrings_dirs"
-
-	# sudo chown root:root -R $keyrings_dirs $source_lists_dir
+  keys=$(command ls "$this_dir/$keyrings_dirs")
+  for k in keys;do
+	gpg --no-default-keyring \
+	  --keyring "$this_dir/$keyrings_dirs/$k" \
+	  --keyserver hkps://keyserver.ubuntu.com \
+	  --recv-keys <fingerprint>
+  done
 }
+# gpg --list-keys --with-colons | awk -F: '/^fpr:/ { print $10 }'
+# gpg --list-keys --with-colons | awk -F: '/^pub:/ { print $5 }'
+# gpg --no-default-keyring --keyring /etc/apt/keyrings/*.gpg --fingerprint
+# gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --with-colons --fingerprint
+# gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --with-colons --fingerprint | awk -F: '/^fpr:/ { print $10 }'
+# gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --fingerprint | sed -n '/^\s/s/\s*//p'
+# gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --with-colons --fingerprint | awk -F: '$1 == "fpr" { print $10 }'
 
 src_lua_dir="${src_dir}/lua"
 src_luarocks_dir="${src_dir}/luarocks"
@@ -210,7 +198,7 @@ function install_r {
 }
 
 function install_conda {
-	echo -e "${RV} Installing R... ${RC}"
+	echo -e "${RV} Installing Conda... ${RC}"
 
 	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$src_dir"
 	bash "$src_dir"/Miniconda3-latest-Linux-x86_64.sh
@@ -254,13 +242,13 @@ function install_nodejs {
 
 	# PROFILE=/dev/null bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash'
 
-	if command_exists cargo; then
-		if ! command_exists fnm; then
+	if ! command_exists fnm; then
+		if command_exists cargo; then
+			cargo install fnm
+		else
+			install_cargo
 			cargo install fnm
 		fi
-	else
-		install_cargo
-		cargo install fnm
 	fi
 
 	# sudo apt remove nodejs
@@ -279,60 +267,8 @@ function install_debget {
 }
 
 install_homebrew() {
-	if ! command -v brew >/dev/null 2>&1; then
-		[ "$debug" ] && START_SECONDS=$(date +%s)
-		log "Installing Homebrew ..."
-		# BREW_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
-		# curl -fsSL "$BREW_URL" >/tmp/brew-$$.sh
-		# [ $? -eq 0 ] || {
-		# 	rm -f /tmp/brew-$$.sh
-		# 	curl -kfsSL "$BREW_URL" >/tmp/brew-$$.sh
-		# }
-		# [ -f /tmp/brew-$$.sh ] || abort "Brew install script download failed"
-		# chmod 755 /tmp/brew-$$.sh
-		# NONINTERACTIVE=1 /bin/bash -c "/tmp/brew-$$.sh" >/dev/null 2>&1
-		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-		# rm -f /tmp/brew-$$.sh
-		export HOMEBREW_NO_INSTALL_CLEANUP=1
-		export HOMEBREW_NO_ENV_HINTS=1
-		export HOMEBREW_NO_AUTO_UPDATE=1
-		[ "$quiet" ] || printf " done"
-		if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-			HOMEBREW_HOME="/home/linuxbrew/.linuxbrew"
-			BREW_EXE="${HOMEBREW_HOME}/bin/brew"
-		else
-			if [ -x /usr/local/bin/brew ]; then
-				HOMEBREW_HOME="/usr/local"
-				BREW_EXE="${HOMEBREW_HOME}/bin/brew"
-			else
-				if [ -x /opt/homebrew/bin/brew ]; then
-					HOMEBREW_HOME="/opt/homebrew"
-					BREW_EXE="${HOMEBREW_HOME}/bin/brew"
-				else
-					abort "Homebrew brew executable could not be located"
-				fi
-			fi
-		fi
-
-		[ "$debug" ] && {
-			calc_elapsed
-			printf "\nHomebrew install elapsed time = ${ELAPSED}\n"
-		}
-		log "Homebrew installed in ${HOMEBREW_HOME}"
-	fi
-	eval "$("$BREW_EXE" shellenv)"
-	have_brew=$(type -p brew)
-	[ "$have_brew" ] && BREW_EXE="brew"
-	[ "$HOMEBREW_HOME" ] || {
-		brewpath=$(command -v brew)
-		if [ $? -eq 0 ]; then
-			HOMEBREW_HOME=$(dirname "$brewpath" | sed -e "s%/bin$%%")
-		else
-			HOMEBREW_HOME="Unknown"
-		fi
-	}
+	"$this_dir/bin/install_homebrew.sh"
 }
-
 function all {
 	echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
 	install_packages
@@ -354,7 +290,7 @@ if [ "$1" = "--backsym" ] || [ "$1" = "-b" ]; then
 	exit 0
 fi
 
-if [ "$1" = "--all" -o "$1" = "-a" ]; then
+if [ "$1" = "--all" ] || [ "$1" = "-a" ]; then
 	all
 	exit 0
 fi
