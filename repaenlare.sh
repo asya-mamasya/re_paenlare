@@ -124,7 +124,7 @@ function apt_key() {
 	gpg --no-default-keyring \
 	  --keyring "$this_dir/$keyrings_dirs/$k" \
 	  --keyserver hkps://keyserver.ubuntu.com \
-	  --recv-keys <fingerprint>
+	  # --recv-keys <fingerprint>
   done
 }
 # gpg --list-keys --with-colons | awk -F: '/^fpr:/ { print $10 }'
