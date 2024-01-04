@@ -1,5 +1,7 @@
+X-Repolib-Name: Insync.io
+Enabled: yes
 Types: deb
-URIs: http://apt.insync.io/ubuntu
+URIs: https://apt.insync.io/ubuntu
 Suites: jammy
 Components: non-free contrib
 Signed-By: /etc/apt/keyrings/insync.gpg

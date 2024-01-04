@@ -1,7 +1,7 @@
 X-Repolib-Name: Yandex Disc
 Enabled: yes
 Types: deb
-URIs: http://repo.yandex.ru/yandex-disk/deb/
+URIs: https://repo.yandex.ru/yandex-disk/deb/
 Suites: stable
 Components: main
 Signed-By: /etc/apt/keyrings/yandex-disk.gpg

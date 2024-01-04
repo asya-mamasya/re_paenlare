@@ -116,16 +116,17 @@ function apt_key() {
 	source_lists_dirs="$apt_confif_dirs"/sources.list.d
 	keyrings_dirs="$apt_confif_dirs"/keyrings
 	# sudo mkdir -p $source_lists_dirs $keyrings_dirs
-  sudo ln -svnf "$this_dir/$source_lists_dirs" "/$source_lists_dirs"
+	sudo ln -svnf "$this_dir/$source_lists_dirs" "/$source_lists_dirs"
+	sudo rm -rf "/$keyrings_dirs"
 	sudo cp -r "$this_dir/$keyrings_dirs" "/$keyrings_dirs"
 
-  keys=$(command ls "$this_dir/$keyrings_dirs")
-  for k in keys;do
-	gpg --no-default-keyring \
-	  --keyring "$this_dir/$keyrings_dirs/$k" \
-	  --keyserver hkps://keyserver.ubuntu.com \
-	  # --recv-keys <fingerprint>
-  done
+	# keys=$(command ls "$this_dir/$keyrings_dirs")
+	# for k in keys; do
+	# 	gpg --no-default-keyring \
+	# 		--keyring "$this_dir/$keyrings_dirs/$k" \
+	# 		--keyserver hkps://keyserver.ubuntu.com
+	# 	# --recv-keys <fingerprint>
+	# done
 }
 # gpg --list-keys --with-colons | awk -F: '/^fpr:/ { print $10 }'
 # gpg --list-keys --with-colons | awk -F: '/^pub:/ { print $5 }'
@@ -135,11 +136,11 @@ function apt_key() {
 # gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --fingerprint | sed -n '/^\s/s/\s*//p'
 # gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --with-colons --fingerprint | awk -F: '$1 == "fpr" { print $10 }'
 
-src_lua_dir="${src_dir}/lua"
-src_luarocks_dir="${src_dir}/luarocks"
-
 lua_version="5.4.6"
 luarocks_version="3.9.2"
+
+src_lua_dir="${src_dir}/lua"
+src_luarocks_dir="${src_dir}/luarocks"
 
 # Lua
 function install_lua {
