@@ -1,0 +1,8 @@
+X-Repolib-Name: Saltproject.io
+Enabled: no
+Types: deb
+URIs: https://repo.saltproject.io/salt/py3/ubuntu/22.04/amd64/3006
+Suites: jammy
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/keyrings/salt-archive-keyring-2023.gpg

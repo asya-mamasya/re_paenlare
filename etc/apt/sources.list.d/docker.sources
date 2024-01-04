@@ -1,0 +1,8 @@
+X-Repolib-Name: docker
+Enabled: no
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/keyrings/docker.gpg
