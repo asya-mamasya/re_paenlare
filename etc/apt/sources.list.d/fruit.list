@@ -1,8 +1,0 @@
-# Types: deb
-# URIs: http://apt.fruit.je/ubuntu
-# Suites: jammy mpv
-# Components: main
-# Signed-By: /etc/apt/keyrings/fruit.gpg
-
-deb [signed-by=/etc/apt/keyrings/fruit.gpg arch=amd64] https://apt.fruit.je/ubuntu jammy mpv
-

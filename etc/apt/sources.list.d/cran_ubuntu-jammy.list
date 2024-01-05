@@ -1,8 +1,0 @@
-# Types: deb
-# URIs: https://cloud.r-project.org/bin/linux/ubuntu
-# Suites: stable
-# Components: main
-# Signed-By: /etc/apt/keyrings/cran_ubuntu-jammy.gpg
-
-deb [signed-by=/etc/apt/keyrings/cran_ubuntu-jammy.gpg] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/
-# deb-src https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/

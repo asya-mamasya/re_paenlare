@@ -1,0 +1,10 @@
+X-Repolib-Name: fruit (mpv)
+Enabled: yes
+Types: deb
+URIs: https://apt.fruit.je/ubuntu
+Suites: jammy
+Components: mpv
+Signed-By: /etc/apt/keyrings/fruit.gpg
+
+# deb [signed-by=/etc/apt/keyrings/fruit.gpg arch=amd64] https://apt.fruit.je/ubuntu jammy mpv
+

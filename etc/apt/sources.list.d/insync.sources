@@ -1,5 +1,5 @@
 X-Repolib-Name: Insync.io
-Enabled: yes
+Enabled: no
 Types: deb
 URIs: https://apt.insync.io/ubuntu
 Suites: jammy

@@ -1,5 +1,5 @@
 X-Repolib-Name: Keybase
-Enabled: no
+Enabled: yes
 Types: deb
 URIs: https://prerelease.keybase.io/deb
 Suites: stable
