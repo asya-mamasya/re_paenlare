@@ -1,5 +1,5 @@
 X-Repolib-Name: Teleport
-Enabled: yes
+Enabled: no
 Types: deb
 URIs: https://apt.releases.teleport.dev/ubuntu
 Suites: jammy

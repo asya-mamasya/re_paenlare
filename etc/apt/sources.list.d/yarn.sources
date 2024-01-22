@@ -1,3 +1,5 @@
+X-Repolib-Name: Yarn 
+Enabled: yes
 Types: deb
 URIs: https://dl.yarnpkg.com/debian/
 Suites: stable

@@ -1,5 +1,5 @@
 X-Repolib-Name: DVC
-Enabled: yes
+Enabled: no
 Types: deb
 URIs: https://dvc.org/deb/
 Suites: stable

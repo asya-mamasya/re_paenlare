@@ -1,3 +1,5 @@
+X-Repolib-Name: CRAN
+Enabled: yes
 Types: deb
 URIs: https://mirror.truenetwork.ru/CRAN/bin/linux/ubuntu
 Suites: jammy-cran40/
