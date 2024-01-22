@@ -112,13 +112,14 @@ function back_sym {
 }
 
 function apt_key() {
-	apt_confif_dirs=etc/apt
-	source_lists_dirs="$apt_confif_dirs"/sources.list.d
-	keyrings_dirs="$apt_confif_dirs"/keyrings
-	# sudo mkdir -p $source_lists_dirs $keyrings_dirs
-	sudo ln -svnf "$this_dir/$source_lists_dirs" "/$source_lists_dirs"
-	sudo rm -rf "/$keyrings_dirs"
-	sudo cp -r "$this_dir/$keyrings_dirs" "/$keyrings_dirs"
+	apt_dir=etc/apt
+	sources_dir="$apt_dir"/sources.list.d
+	keyrings_dir="$apt_dir"/keyrings
+	sudo mkdir -p $sources_dir $keyrings_dir
+
+	sudo ln -svnf "$this_dir/$sources_dir" "/$sources_dir"
+	sudo rm -rf "/$keyrings_dir"
+	sudo cp -r "$this_dir/$keyrings_dir" "/$keyrings_dir"
 }
 # function update_keys() {
 #   keys=$(command ls "$this_dir/$keyrings_dirs")
