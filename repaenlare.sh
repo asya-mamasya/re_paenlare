@@ -113,13 +113,17 @@ function back_sym {
 
 function apt_key() {
 	apt_dir=etc/apt
-	sources_dir="$apt_dir"/sources.list.d
-	keyrings_dir="$apt_dir"/keyrings
-	sudo mkdir -p $sources_dir $keyrings_dir
+	# sources_dir="/$apt_dir"/sources.list.d
+  
+	sources_keyrings_dir="/$apt_dir/keyrings"
+	destination_keyrings_dir="$apt_dir/keyrings"
+	# destination_keyrings_dir="$this_dir/test"
 
-	sudo ln -svnf "$this_dir/$sources_dir" "/$sources_dir"
-	sudo rm -rf "/$keyrings_dir"
-	sudo cp -r "$this_dir/$keyrings_dir" "/$keyrings_dir"
+  bash keyrings.sh $sources_keyrings_dir $destination_keyrings_dir 
+
+	# sudo ln -svnf "$this_dir/$sources_dir" "/$sources_dir"
+	# sudo rm -rf "/$keyrings_dir"
+	# sudo cp -r "$this_dir/$keyrings_dir" "/$keyrings_dir"
 }
 # function update_keys() {
 #   keys=$(command ls "$this_dir/$keyrings_dirs")
