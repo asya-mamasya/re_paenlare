@@ -47,8 +47,10 @@ function update_gpg_keyrings() {
 function to_bin_apt_keys() {
 	for k in $keys; do
 		name="${k%.*}"
-		command cat "$sources_keyrings_dir/$name.asc" | gpg --dearmor \
-			-o "$destination_keyrings_dir/$name.gpg"
+		# command cat "$sources_keyrings_dir/$name.asc" | gpg --dearmor \
+		# 	-o "$destination_keyrings_dir/$name.gpg"
+    gpg --dearmor --yes -o \
+      "$destination_keyrings_dir/$name.gpg" < "$destination_keyrings_dir/$name.asc"
 	done
 }
 
