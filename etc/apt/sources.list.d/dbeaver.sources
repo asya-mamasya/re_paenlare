@@ -4,4 +4,3 @@ Types: deb
 URIs: https://dbeaver.io/debs/dbeaver-ce
 Suites: /
 Signed-By: /etc/apt/keyrings/dbeaver.gpg
-
