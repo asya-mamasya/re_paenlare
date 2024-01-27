@@ -112,34 +112,20 @@ function back_sym {
 }
 
 function apt_key() {
+
 	apt_dir=etc/apt
 	# sources_dir="/$apt_dir"/sources.list.d
   
-	sources_keyrings_dir="/$apt_dir/keyrings"
-	destination_keyrings_dir="$apt_dir/keyrings"
-	# destination_keyrings_dir="$this_dir/test"
+	source_dir="$apt_dir"
+	# dest_dir="/$apt_dir"
+	dest_dir="$this_dir/test"
 
-  bash keyrings.sh $sources_keyrings_dir $destination_keyrings_dir 
+  keyrings.sh --to-bin "$this_dir/$source_dir"/keyrings "$dest_dir"/keyrings 
 
-	# sudo ln -svnf "$this_dir/$sources_dir" "/$sources_dir"
+	sudo ln -svnf "$this_dir/$source_dir"/sources.list.d "/$dest_dir/"
 	# sudo rm -rf "/$keyrings_dir"
 	# sudo cp -r "$this_dir/$keyrings_dir" "/$keyrings_dir"
 }
-# function update_keys() {
-#   keys=$(command ls "$this_dir/$keyrings_dirs")
-#   for k in keys;do
-# 	sudo gpg --no-default-keyring \
-# 	  --keyring "$this_dir/$keyrings_dirs/$k" \
-# 	  --keyserver hkps://keyserver.ubuntu.com \
-# 	  --recv-keys <fingerprint>
-#   done
-# # gpg --list-keys --with-colons | awk -F: '/^fpr:/ { print $10 }'
-# # gpg --list-keys --with-colons | awk -F: '/^pub:/ { print $5 }'
-# # gpg --no-default-keyring --keyring /etc/apt/keyrings/*.gpg --fingerprint
-# # gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --with-colons --fingerprint
-# # gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --with-colons --fingerprint | awk -F: '/^fpr:/ { print $10 }'
-# # gpg --no-default-keyring --keyring /etc/apt/keyrings/brave-browser-release.gpg --fingerprint | sed -n '/^\s/s/\s*//p'
-# }
 
 lua_version="5.4.6"
 luarocks_version="3.9.2"

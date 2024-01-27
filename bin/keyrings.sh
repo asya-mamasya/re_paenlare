@@ -4,18 +4,19 @@
 # 	echo "Вызовите сценарий с параметрами: keyrings.sh sources_dir destination_dir "
 # fi
 
-sources_keyrings_dir=$1
-destination_keyrings_dir=$2
-
 # apt_dir=/etc/apt
 # sources_dir="$apt_dir"/sources.list.d
 # keyrings_dir="$apt_dir"/keyrings
 
 # this_dir="$(dirname "$(realpath "$0")")"
 # destination_keyrings_dir=$this_dir/test
-mkdir -p "$destination_keyrings_dir"
 
-keys=$(command ls "$sources_keyrings_dir")
+sources_dir=$2
+destination_dir=$3
+
+mkdir -p "$destination_dir"
+
+keys=$(command ls "$sources_dir")
 # for k in $keys; do
 # 	name="${k%.*}"
 # 	# echo -E "$name"
@@ -24,12 +25,12 @@ keys=$(command ls "$sources_keyrings_dir")
 function update_apt_keyrings() {
 	for k in $keys; do
 		name="${k%.*}"
-		recv_keys=$(gpg -k --no-default-keyring --keyring "$sources_keyrings_dir/$name.gpg" |
+		recv_keys=$(gpg -k --no-default-keyring --keyring "$sources_dir/$name.gpg" |
 			grep -E "([0-9A-F]{40})" | tr -d " ")
 		# echo -E "$name"
 		# echo -E "$recv_keys"
 		gpg --no-default-keyring \
-			--keyring "$sources_keyrings_dir/$name.gpg" \
+			--keyring "$sources_dir/$name.gpg" \
 			--keyserver hkps://keyserver.ubuntu.com \
 			--recv-keys "$recv_keys"
 	done
@@ -48,9 +49,9 @@ function to_bin_apt_keys() {
 	for k in $keys; do
 		name="${k%.*}"
 		# command cat "$sources_keyrings_dir/$name.asc" | gpg --dearmor \
-		# 	-o "$destination_keyrings_dir/$name.gpg"
+		# 	-o "$destination_dir/$name.gpg"
     gpg --dearmor --yes -o \
-      "$destination_keyrings_dir/$name.gpg" < "$destination_keyrings_dir/$name.asc"
+      "$destination_dir/$name.gpg" < "$sources_dir/$name.asc"
 	done
 }
 
@@ -58,11 +59,31 @@ function to_ascii_apt_keys() {
 	for k in $keys; do
 		name="${k%.*}"
 		gpg --export --armor --no-default-keyring \
-			--keyring "$sources_keyrings_dir/$name.gpg" \
-			-o "$destination_keyrings_dir/$name.asc"
+			--keyring "$sources_dir/$name.gpg" \
+			-o "$destination_dir/$name.asc"
 	done
 }
-to_ascii_apt_keys
+
+for i in "$@"; do
+  	if [[ "$i" = --* ]]; then
+      case $i in
+        "--to-asc")
+          to_ascii_apt_keys
+          ;;
+        "--to-bin")
+          to_bin_apt_keys
+          ;;
+        "--update-apt")
+          update_apt_keyrings
+          ;;
+        "--update-gpg")
+          update_gpg_keyrings
+          ;;
+      esac
+    fi
+done
+
+
 
 # echo -e "$1"
 # echo -e "$2"
