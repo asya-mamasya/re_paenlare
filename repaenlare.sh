@@ -115,14 +115,14 @@ function apt_key() {
 
 	apt_dir=etc/apt
 	# sources_dir="/$apt_dir"/sources.list.d
+	# dest_dir="$this_dir/test"
   
 	source_dir="$apt_dir"
-	# dest_dir="/$apt_dir"
-	dest_dir="$this_dir/test"
+	dest_dir="/$apt_dir"
 
   keyrings.sh --to-bin "$this_dir/$source_dir"/keyrings "$dest_dir"/keyrings 
 
-	sudo ln -svnf "$this_dir/$source_dir"/sources.list.d "/$dest_dir/"
+	sudo ln -svnf "$this_dir/$source_dir/sources.list.d" "$dest_dir"
 	# sudo rm -rf "/$keyrings_dir"
 	# sudo cp -r "$this_dir/$keyrings_dir" "/$keyrings_dir"
 }
