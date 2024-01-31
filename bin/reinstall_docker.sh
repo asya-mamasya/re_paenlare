@@ -15,7 +15,7 @@ docker_gpg_key() {
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 	sudo chmod a+r /etc/apt/keyrings/docker.gpg
 }
-docker_gpg_key
+# docker_gpg_key
 # Add the repository to Apt sources:
 docker_repo() {
 	echo \
@@ -24,12 +24,13 @@ docker_repo() {
 		sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 	sudo apt-get update
 }
-docker_repo
+# docker_repo
 
 # Install Docker Engine
 docker_engine_install() {
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 }
+docker_engine_install
 
 # Remove docker-engine
 docker_engine_remove() {
