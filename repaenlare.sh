@@ -63,13 +63,12 @@ checkEnv() {
 checkEnv
 
 function install_packages {
-	DEPENDENCIES='curl wget python3 pipx aptitude nala libxml2-dev luakit \
-    apt-transport-https'
+	DEPENDENCIES='curl wget python3 pipx aptitude nala libxml2-dev luakit apt-transport-https'
 
-	sudo apt install --upgrade ca-certificates
-	sudo apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
+	# sudo apt install --upgrade ca-certificates
+	# sudo apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
 
-	sudo "${PACKAGER}" install -yq "${DEPENDENCIES}"
+	sudo "${PACKAGER}" install ${DEPENDENCIES}
 }
 
 # перед создание линков делает бекапы только тех пользовательских конфикураций,
@@ -117,14 +116,16 @@ function apt_key() {
 	# sources_dir="/$apt_dir"/sources.list.d
 	# dest_dir="$this_dir/test"
   
-	source_dir="$apt_dir"
-	dest_dir="/$apt_dir"
+	# source_dir="$apt_dir"
+	# dest_dir="/$apt_dir"
 
-  keyrings.sh --to-bin "$this_dir/$source_dir"/keyrings "$dest_dir"/keyrings 
+	sudo rm -rf "/$apt_dir/keyrings"
+  sudo mv "/$apt_dir/sources.list" "/$apt_dir/sources.list.old"
+  # sudo rm -f "/$apt_dir"/sources.list
 
-	sudo ln -svnf "$this_dir/$source_dir/sources.list.d" "$dest_dir"
-	# sudo rm -rf "/$keyrings_dir"
-	# sudo cp -r "$this_dir/$keyrings_dir" "/$keyrings_dir"
+  ./bin/keyrings.sh --to-bin "$this_dir/$apt_dir"/keyrings "/$apt_dir"/keyrings 
+
+	sudo ln -svnf "$this_dir/$apt_dir/sources.list.d" "/$apt_dir"
 }
 
 lua_version="5.4.6"
